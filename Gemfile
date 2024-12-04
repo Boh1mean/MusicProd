@@ -47,3 +47,5 @@ group :development, :test do
 
   gem "dotenv-rails"
 end
+
+gem "devise_token_auth", git: "https://github.com/lynndylanhurley/devise_token_auth"
