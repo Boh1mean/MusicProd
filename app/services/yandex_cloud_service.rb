@@ -20,13 +20,28 @@ class YandexCloudService
 
   def process_track(object)
     filename = object.key.split("/").last
+    artist_name, name = parse_filename(filename)
     cloud_url = object.public_url
     # duration = extract_duration(object)
 
     Track.create!(
-      name: filename,
+      name: name,
+      artist_name: artist_name,
       cloud_url: cloud_url,
       # duration: duration
     )
+  end
+
+  def parse_filename(filename)
+    base_name = File.basename(filename, File.extname(filename)) # delete .mp3
+
+    if base_name.include?(" - ")
+      artist_name, name = base_name.split(" - ", 2)
+    else
+      artist_name = "Unknown Artist"
+      name = base_name
+    end
+
+    [ artist_name.strip, name.strip ]
   end
 end
