@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_09_165337) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_09_172448) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,13 +50,13 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_09_165337) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.string "artist_name", null: false
-    t.string "release_date", null: false
-    t.string "kind", null: false
-    t.string "artist_id", null: false
-    t.string "artist_url", null: false
+    t.string "release_date"
+    t.string "kind"
+    t.string "artist_id"
+    t.string "artist_url"
     t.string "content_advisory_rating"
-    t.string "artwork_url", null: false
-    t.text "genres", default: [], null: false, array: true
+    t.string "artwork_url"
+    t.text "genres", default: [], array: true
     t.index ["user_id"], name: "index_tracks_on_user_id"
   end
 
