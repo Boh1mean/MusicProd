@@ -13,6 +13,12 @@ module Api
       end
 
 
+      def top_tracks
+        tracks = Track.order("RANDOM()").limit(11)
+        render json: tracks, status: :ok
+      end
+
+
       private
 
       def format_track(track)
