@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       resources :tracks, only: [ :index ] do
         collection do
           post :sync   # POST /api/tracks/sync
+          get :top_tracks # GET /api/tracks/top_tracks
         end
       end
     end
