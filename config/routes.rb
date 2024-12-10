@@ -12,6 +12,7 @@ Rails.application.routes.draw do
           get :top_tracks # GET /api/tracks/top_tracks
         end
       end
+      resources :playlists, only: [ :create, :index, :show ]
     end
   end
 end
