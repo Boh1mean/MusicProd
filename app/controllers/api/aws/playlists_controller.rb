@@ -10,9 +10,9 @@ module Api
         playlist = Playlist.create!(
           name: params[:name],
           kind: params[:kind],
-          artwork_url: params[:artwork_url],
+          category: params[:category],
+          # artwork_url: params[:artwork_url],
           url: params[:url]
-
         )
 
         track_ids = params[:track_ids] || []
@@ -25,6 +25,11 @@ module Api
       def show
         playlist = Playlist.includes(:tracks).find(params[:id])
         render json: playlist, include: [ "tracks" ]
+      end
+
+      def fetch_from_yandex_cloud
+        YandexCloudService.new.fetch_all_playlists
+        render json: { message: "Playlists fetched and created successfully" }
       end
     end
   end
