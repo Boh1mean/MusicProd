@@ -12,6 +12,11 @@ Rails.application.routes.draw do
           get :top_tracks # GET /api/tracks/top_tracks
         end
       end
+      resources :playlists, only: [ :create, :index, :show ] do
+        collection do
+          post :fetch_from_yandex_cloud
+        end
+      end
     end
   end
 end
