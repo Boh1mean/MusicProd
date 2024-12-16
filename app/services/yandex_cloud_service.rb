@@ -22,7 +22,6 @@ class YandexCloudService
     filename = object.key.split("/").last
     artist_name, name = parse_filename(filename)
     cloud_url = object.public_url
-    # duration = extract_duration(object)
 
     track = Track.find_or_create_by!(
       name: name,
@@ -30,7 +29,6 @@ class YandexCloudService
       cloud_url: cloud_url
     )
 
-    playlist = Playlist.find_or_create_by!(name: object.key.split("/")[1])
     playlist.tracks << track unless playlist.tracks.include?(track)
   end
 
@@ -47,13 +45,16 @@ class YandexCloudService
     url = object.public_url
 
     playlist = Playlist.find_or_create_by!(
-      name: playlist_name,
-      kind: default_kind,
-      artwork_url: default_artwork_url,
-      url: url
-      )
+      name: playlist_name
+    ) do |pl|
+      pl.kind = default_kind
+      pl.artwork_url = default_artwork_url
+      pl.url = url
+     end
 
-    process_track(object, playlist)
+    @bucket.objects(prefix: "playlists/#{playlist_name}/").each do |track_object|
+      process_track(track_object, playlist) if track_object.key.match(/\.mp3$/)
+    end
   end
 
   def parse_filename(filename)

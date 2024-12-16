@@ -10,7 +10,6 @@ module Api
         playlist = Playlist.create!(
           name: params[:name],
           kind: params[:kind],
-          category: params[:category],
           # artwork_url: params[:artwork_url],
           url: params[:url]
         )
