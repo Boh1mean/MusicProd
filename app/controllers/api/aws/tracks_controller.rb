@@ -1,6 +1,7 @@
 module Api
   module Aws
     class TracksController < ApplicationController
+      before_action :authenticate_user!, only: [ :like_track ]
       def index
         @tracks = Track.all
         render json: tracks.map { |track| format_track(track) }, status: :ok
@@ -16,6 +17,17 @@ module Api
       def top_tracks
         tracks = Track.order("RANDOM()").limit(11)
         render json: tracks, status: :ok
+      end
+
+      def like_track
+        track = Track.find(params[:id])
+        liked_playlist = Playlist.find_or_create_liked_playlist(current_user, track)
+
+        unless liked_playlist.tracks.include?(track)
+          liked_playlist.tracks << track
+        end
+
+        render json: { message: "Track liked successfully", playlist: liked_playlist }, status: :ok
       end
 
 

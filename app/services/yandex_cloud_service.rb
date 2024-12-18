@@ -13,8 +13,9 @@ class YandexCloudService
   end
 
   def fetch_all_tracks
+    dummy_playlist = Playlist.find_or_create_by!(name: "Temporary Playlist", kind: "temporary", artwork_url: "-", url: "-")
     @bucket.objects.each do |object|
-      process_track(object)
+      process_track(object, dummy_playlist) # Добавление второго аргумента `playlist`
     end
   end
 
