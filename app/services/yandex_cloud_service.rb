@@ -50,7 +50,7 @@ class YandexCloudService
   def process_playlist(object, common_artwork_url)
     playlist_name = object.key.split("/")[1]
     default_kind = "playlist"
-    artwork_url = artwork_url
+    artwork_url = common_artwork_url
     url = object.public_url
 
     playlist = Playlist.find_or_create_by!(
