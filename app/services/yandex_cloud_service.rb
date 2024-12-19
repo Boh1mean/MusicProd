@@ -37,7 +37,9 @@ class YandexCloudService
         track.update!(artwork_url: artwork_url)
       end
 
-      playlist.tracks << track unless playlist.tracks.include?(track)
+      if playlist
+        playlist.tracks << track unless playlist.tracks.include?(track)
+      end
   end
 
   def fetch_all_playlists
