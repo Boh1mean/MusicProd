@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: music_prod_development
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    restart: unless-stopped
+    environment:
+      RAILS_ENV: development
+      BUNDLE_WITHOUT: ""
+      POSTGRES_HOST: db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: music_prod_development
+      YANDEX_CLOUD_ACCESS_KEY: ${YANDEX_CLOUD_ACCESS_KEY}
+      YANDEX_CLOUD_SECRET_KEY: ${YANDEX_CLOUD_SECRET_KEY}
+      YANDEX_CLOUD_BUCKET: ${YANDEX_CLOUD_BUCKET}
+    ports:
+      - "3000:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

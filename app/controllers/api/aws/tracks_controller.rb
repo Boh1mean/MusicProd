@@ -1,10 +1,11 @@
 module Api
   module Aws
     class TracksController < ApplicationController
-      before_action :authenticate_user!, only: [ :like_track ]
+      before_action :authenticate_user!, only: [ :like_track, :sync, :liked ]
+
       def index
         @tracks = Track.all
-        render json: tracks.map { |track| format_track(track) }, status: :ok
+        render json: @tracks.map { |track| format_track(track) }, status: :ok
       end
 
       def sync
@@ -28,7 +29,7 @@ module Api
             artistUrl: track.artist_url || "",
             contentAdvisoryRating: track.content_advisory_rating || "",
             artworkUrl100: track.artwork_url,
-            genres: track.genres.map { |genre| { genreId: "", name: genre, url: "" } },
+            genres: track.genres,
             url: track.cloud_url
           }
         end
@@ -56,9 +57,15 @@ module Api
         render json: response, status: :ok
       end
 
+      def liked
+        playlist = @resource.liked_playlists.first
+        tracks = playlist ? playlist.tracks : []
+        render json: tracks.map { |track| format_track(track) }, status: :ok
+      end
+
       def like_track
         track = Track.find(params[:id])
-        liked_playlist = Playlist.find_or_create_liked_playlist(current_user, track)
+        liked_playlist = Playlist.find_or_create_liked_playlist(@resource, track)
 
         unless liked_playlist.tracks.include?(track)
           liked_playlist.tracks << track

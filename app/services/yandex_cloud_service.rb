@@ -23,21 +23,17 @@ class YandexCloudService
     filename = object.key.split("/").last
     artist_name, name = parse_filename(filename)
     cloud_url = object.public_url
-    artwork_url = generate_artwork_url
 
-    track = Track.find_or_create_by!(
-      name: name,
-      artist_name: artist_name,
-      cloud_url: cloud_url,
-      kind: "track",
-      artwork_url: artwork_url
-    )
+    track = Track.find_or_create_by!(name: name, artist_name: artist_name, cloud_url: cloud_url) do |t|
+      t.kind = "track"
+      t.artwork_url = artwork_url
+    end
 
-      if track.artwork_url.blank?
-        track.update!(artwork_url: artwork_url)
-      end
+    track.update!(artwork_url: artwork_url) if track.artwork_url.blank?
 
-      playlist.tracks << track unless playlist.tracks.include?(track)
+    if playlist && !playlist.tracks.include?(track)
+      playlist.tracks << track
+    end
   end
 
   def fetch_all_playlists

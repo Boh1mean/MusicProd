@@ -1,6 +1,8 @@
 module Api
   module Aws
     class PlaylistsController < ApplicationController
+      before_action :authenticate_user!, only: [ :create, :fetch_from_yandex_cloud ]
+
       def index
         playlists = Playlist.includes(:tracks).all
         formatted_playlists = playlists.map do |playlist|
@@ -42,7 +44,7 @@ module Api
         playlist = Playlist.create!(
           name: params[:name],
           kind: params[:kind],
-          # artwork_url: params[:artwork_url],
+          artwork_url: params[:artwork_url],
           url: params[:url]
         )
 
