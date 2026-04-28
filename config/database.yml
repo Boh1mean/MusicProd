@@ -18,4 +18,4 @@ test:
 
 production:
   <<: *default
-  database: music_prod_production
+  url: <%= ENV['DATABASE_URL'] %>
