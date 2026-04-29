@@ -13,16 +13,16 @@ class YandexCloudService
   end
 
   def fetch_all_tracks
-    common_artwork_url = generate_artwork_url
     @bucket.objects.each do |object|
-      process_track(object, nil, common_artwork_url) if object.key.match(/\.mp3$/)
+      process_track(object) if object.key.match(/\.mp3$/)
     end
   end
 
-  def process_track(object, playlist = nil, artwork_url)
+  def process_track(object, playlist = nil, artwork_url = nil)
     filename = object.key.split("/").last
     artist_name, name = parse_filename(filename)
     cloud_url = object.public_url
+    artwork_url ||= find_artwork_for(object)
 
     track = Track.find_or_create_by!(name: name, artist_name: artist_name, cloud_url: cloud_url) do |t|
       t.kind = "track"
@@ -78,4 +78,28 @@ class YandexCloudService
   def generate_artwork_url # Возвращаем URL обложки
     "https://storage.yandexcloud.net/music-servise-bucker1/artwork.jpg"
   end
+
+  def find_artwork_for(object)
+    normalized = normalize_filename(object.key)
+
+    %w[jpg jpeg png].each do |ext|
+      key = "covers/#{normalized}.#{ext}"
+      artwork = @bucket.object(key)
+
+      return artwork.public_url if artwork.exists?
+    end
+
+    generate_artwork_url
+  end
+
+  def normalize_filename(key)
+    base = File.basename(key, File.extname(key))
+    base = base.unicode_normalize(:nfc)
+
+    base
+      .gsub(" - ", "-")
+      .gsub(" ", "")
+  end
 end
+
+
